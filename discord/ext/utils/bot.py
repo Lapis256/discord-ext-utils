@@ -22,10 +22,7 @@ class BotBase(_BotBase):
         for event in self.extra_events.pop(ev, []):
             self._schedule_event(event, ev, *args, **kwargs)
 
-class _Bot(BotBase, discord.Client):
-    pass
-
-class Bot(_Bot):
+class Bot(BotBase, discord.Client):
     pass
 
 class AutoShardedBot(BotBase, discord.AutoShardedClient):
