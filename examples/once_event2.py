@@ -6,7 +6,7 @@ class MyBot(utils.Bot):
         pass
         # It will be executed only once.
 
-    async def on_ready():
+    async def on_ready(self):
         pass
         # It will be executed many times.
 
