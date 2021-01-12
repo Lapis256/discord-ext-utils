@@ -13,7 +13,7 @@ class MyBotPresence(PresenceTask):
 
 class MyBot(Bot):
     async def once_ready(self):
-        self.presence = MyBotPresence(bot, delay=15)
+        self.presence = MyBotPresence(self, delay=15)
         self.presence.start()
 
 bot = MyBot(command_prefix=commands.when_mentioned)
