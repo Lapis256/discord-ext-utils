@@ -1,24 +1,17 @@
 from discord.ext import commands
-from discord.ext.utils.expander import *
+from discord.ext.utils.expander import Expander
 
 
 class ExpanderCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.cls = Expander
-        self.args = ()
-        self.kwargs = {}
+        self.expander = Expander
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if not message.author.bot:
-            await expand(
-                self.bot,
-                message,
-                cls=self.cls,
-                cls_args=self.args,
-                cls_kwargs=self.kwargs
-            )
+        if message.author.bot:
+            return
+        await self.expander.expand(self.bot, message)
 
 
 def setup(bot):
