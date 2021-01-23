@@ -4,7 +4,7 @@ setup(
     name="discord-ext-utils",
     author="Lapis256",
     url="https://github.com/Lapis256/discord-ext-utils",
-    version="0.2",
+    version="0.3",
     packages=["discord.ext.utils", "discord.ext.utils.cogs"],
     license="MIT",
     description="An extension module of discord.ext.commands.",
