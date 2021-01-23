@@ -1,4 +1,5 @@
 from types import FunctionType, MethodType
+
 import discord
 from discord.ext.commands.bot import BotBase as _BotBase
 
@@ -16,14 +17,16 @@ class BotBase(_BotBase):
                 delattr(self, ev)
             elif type(coro) is MethodType:
                 delattr(self.__class__, ev)
-            
-            self._schedule_event(coro, ev, *args, **kwargs) 
+
+            self._schedule_event(coro, ev, *args, **kwargs)
 
         for event in self.extra_events.pop(ev, []):
             self._schedule_event(event, ev, *args, **kwargs)
 
+
 class Bot(BotBase, discord.Client):
     pass
+
 
 class AutoShardedBot(BotBase, discord.AutoShardedClient):
     pass

@@ -10,6 +10,7 @@ class MyBot(utils.Bot):
         pass
         # It will be executed many times.
 
+
 bot = MyBot(command_prefix=".")
 
 
