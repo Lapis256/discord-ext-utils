@@ -12,6 +12,6 @@ setup(
     packages=["discord.ext.utils", "discord.ext.utils.cogs"],
     license="MIT",
     description="An extension module of discord.ext.commands.",
-    install_requires=["discord.py>=1.2.5"],
+    install_requires=["discord.py>=1.5.0,<2.0.0", "more-itertools"],
     python_requires=">=3.6.0"
 )
