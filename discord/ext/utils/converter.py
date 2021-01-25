@@ -15,7 +15,7 @@ class OutOfRange(BadArgument):
         self.type = type
         self.min = min
         self.max = max
-        
+
         super().__init__("%s is out of range." % argument)
 
 
@@ -27,17 +27,17 @@ class RangeConverter(Converter):
         else:
             self.min = min
             self.max = max
-        
+
         super().__init__()
-    
+
     def check(self, number):
         return self.min <= number < self.max
-    
+
     async def convert(self, ctx, argument):
         if not argument.isdigit():
             raise BadArgument("%s is not int" % argument)
         int_argument = int(argument)
-        
+
         if self.check(int_argument):
             return int_argument
         raise OutOfRange(int_argument, type(self), self.min, self.max)

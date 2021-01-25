@@ -11,7 +11,7 @@ class ExpanderCog(commands.Cog):
     async def on_message(self, message):
         if message.author.bot:
             return
-        
+
         webhook = await message.channel.create_webhook(
             name="Message Expander",
             reason="For message expand."
