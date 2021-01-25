@@ -1,6 +1,9 @@
 from setuptools import setup
 from re import search
 
+with open("requirements.txt") as f:
+    requirements = f.readlines()
+
 with open("discord/ext/utils/__init__.py") as f:
     version = search(r'__version__\s=\s"(.*?)"', f.read()).group(1)
 
@@ -12,6 +15,6 @@ setup(
     packages=["discord.ext.utils", "discord.ext.utils.cogs"],
     license="MIT",
     description="An extension module of discord.ext.commands.",
-    install_requires=["discord.py>=1.5.0,<2.0.0", "more-itertools"],
+    install_requires=requirements,
     python_requires=">=3.6.0"
 )
