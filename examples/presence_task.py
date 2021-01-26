@@ -1,24 +1,21 @@
-from discord.ext.utils import Bot, PresenceTask, presence
+from discord.ext.utils import PresenceTask
 from discord.ext import commands
 
 
 class MyBotPresence(PresenceTask):
-    @presence
     def help(bot):
         return f"@{bot.user.name} help"
 
-    @presence
     def version(bot):
         return f"{bot.user.name} - v0.1"
 
 
-class MyBot(Bot):
-    async def once_ready(self):
-        self.presence = MyBotPresence(self, delay=15)
-        self.presence.start()
+bot = commands.Bot(command_prefix=commands.when_mentioned)
 
 
-bot = MyBot(command_prefix=commands.when_mentioned)
+MyBotPresence(bot, 15, presences=[
+    "I am the best bot in the world!!"
+]).start()
 
 
 bot.run("TOKEN")

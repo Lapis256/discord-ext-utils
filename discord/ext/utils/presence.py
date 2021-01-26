@@ -1,52 +1,41 @@
-import asyncio
 import itertools
 
 import discord
 from discord.utils import maybe_coroutine
+from discord.ext.tasks import Loop
 
 
 class PresenceTask:
-    def __init__(self, bot, delay=10, *, activity=discord.Game, **kwargs):
-        presences = [attr for name in self.__class__.__dict__.keys()
-                     if isinstance(attr := getattr(self, name, None), _Presence)]
-
-        self._iter = itertools.cycle(presences)
-        self._task = None
+    def __init__(self, bot, interval=10, *, presences=None, activity=discord.Game, activity_kwargs=None):
         self._activity = activity
-        self._kwargs = kwargs.get("activity_kwargs", {})
-
-        self.delay = delay
+        self._kwargs = activity_kwargs or {}
         self.bot = bot
 
-    async def _loop(self):
-        while True:
-            result = await maybe_coroutine(next(self._iter).func, self.bot)
-            if result is None:
-                continue
-            elif isinstance(result, discord.BaseActivity):
-                activity = result
-            else:
-                activity = self._activity(**self._kwargs, name=str(result))
+        items = self.__class__.__dict__.items()
+        _presences = [v for k, v in items if not k.startswith("_")]
+        str_presences = presences or []
+        self._iter = itertools.cycle([*str_presences, *_presences])
 
-            await self.bot.change_presence(activity=activity)
-            await asyncio.sleep(self.delay)
+        self._task = Loop(self._loop, interval, 0, 0, None, True, None)
+        self._task.before_loop(self._wait_until_ready)
+
+    async def _loop(self):
+        presence = next(self._iter)
+        if type(presence) is not str:
+            presence = await maybe_coroutine(presence, self.bot)
+
+        if isinstance(presence, discord.BaseActivity):
+            activity = presence
+        else:
+            activity = self._activity(**self._kwargs, name=str(presence))
+
+        await self.bot.change_presence(activity=activity)
+
+    async def _wait_until_ready(self):
+        await self.bot.wait_until_ready()
 
     def start(self):
-        if self._task is not None and not self._task.done():
-            raise RuntimeError("Task is already launched and is not completed.")
-
-        self._task = self.bot.loop.create_task(self._loop())
-        return self._task
+        return self._task.start()
 
     def cancel(self):
-        if self._task and not self._task.done():
-            self._task.cancel()
-
-
-class _Presence:
-    def __init__(self, func):
-        self.func = func
-
-
-def presence(func):
-    return _Presence(func)
+        self._task.cancel()
