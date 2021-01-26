@@ -38,11 +38,11 @@ def _divide_attachments(attachments):
     return (images, files)
 
 
-class MinimalExpander:
+class ExpanderBase:
     def __init__(self, bot):
         self.bot = bot
 
-    async def check_global_expand(self, guild_id):
+    async def check_global_expand(self, bot, guild_id):
         return False
 
     async def extract_message_iter(self, message):
@@ -80,6 +80,26 @@ class MinimalExpander:
             icon_url=message.guild.icon_url
         ).set_image(url=image_url)
 
+    @staticmethod
+    def make_image_embed(message, url, current, total):
+        pass
+
+    @staticmethod
+    def make_files_embed(files):
+        pass
+
+    def embed_iter(self, message):
+        pass
+
+    @classmethod
+    async def expand(cls, bot, message):
+        self = cls(bot)
+        async for m in self.extract_message_iter(message):
+            for embed in self.embed_iter(m):
+                await message.channel.send(embed=embed)
+
+
+class MinimalExpander(ExpanderBase):
     def embed_iter(self, message):
         images, _ = _divide_attachments(message.attachments)
         kwargs = {}
@@ -93,15 +113,8 @@ class MinimalExpander:
         if message.embeds:
             yield message.embeds[0]
 
-    @classmethod
-    async def expand(cls, bot, message):
-        self = cls(bot)
-        async for m in self.extract_message_iter(message):
-            for embed in self.embed_iter(m):
-                await message.channel.send(embed=embed)
 
-
-class Expander(MinimalExpander):
+class Expander(ExpanderBase):
     @staticmethod
     def make_image_embed(message, url, current, total):
         return Embed().set_image(
@@ -132,13 +145,6 @@ class Expander(MinimalExpander):
 
         for embed in message.embeds:
             yield embed
-
-    @classmethod
-    async def expand(cls, bot, message):
-        self = cls(bot)
-        async for m in self.extract_message_iter(message):
-            for embed in self.embed_iter(m):
-                await message.channel.send(embed=embed)
 
 
 class WebhookExpander(Expander):

@@ -1,6 +1,9 @@
-from .bot import Bot, AutoShardedBot # noqa
-from .presence import PresenceTask, presence # noqa
 from .expander import * # noqa
-from .converter import * # noqa
+from .bot import * # noqa
 
-__version__ = "0.3.0"
+# from .help_slash_command import HelpSlashCommand # noqa
+from .once_event import OnceEvent # noqa
+from .presence import PresenceTask # noqa
+from .converter import rangeC # noqa
+
+__version__ = "0.3.1"

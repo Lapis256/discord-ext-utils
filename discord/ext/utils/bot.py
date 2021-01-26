@@ -1,32 +1,30 @@
-from types import FunctionType, MethodType
+from discord.ext.commands import (
+    Bot as _Bot,
+    AutoShardedBot as _AutoShardedBot
+)
 
-import discord
-from discord.ext.commands.bot import BotBase as _BotBase
-
-
-class BotBase(_BotBase):
-    def dispatch(self, event_name, *args, **kwargs):
-        super().dispatch(event_name, *args, **kwargs)
-        ev = 'once_' + event_name
-        try:
-            coro = getattr(self, ev)
-        except AttributeError:
-            pass
-        else:
-            if type(coro) is FunctionType:
-                delattr(self, ev)
-            elif type(coro) is MethodType:
-                delattr(self.__class__, ev)
-
-            self._schedule_event(coro, ev, *args, **kwargs)
-
-        for event in self.extra_events.pop(ev, []):
-            self._schedule_event(event, ev, *args, **kwargs)
+from .once_event import OnceEvent
+# from .help_slash_command import HelpSlashCommand
 
 
-class Bot(BotBase, discord.Client):
+__all__ = ("Bot", "AutoShardedBot")
+
+
+"""
+class BotBase(OnceEvent, HelpSlashCommand):
+    def __init__(self, *args, **kwargs):
+        kwargs["register_help_slash_command"] = kwargs.get("register_help_slash_command", False)
+        
+        super().__init__(*args, **kwargs)
+"""
+
+class BotBase(OnceEvent):
     pass
 
 
-class AutoShardedBot(BotBase, discord.AutoShardedClient):
+class Bot(BotBase, _Bot):
+    pass
+
+
+class AutoShardedBot(BotBase, _AutoShardedBot):
     pass
