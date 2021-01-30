@@ -6,4 +6,4 @@ from .once_event import OnceEvent # noqa
 from .presence import PresenceTask # noqa
 from .converter import rangeC # noqa
 
-__version__ = "0.3.1"
+__version__ = "0.4.0"
