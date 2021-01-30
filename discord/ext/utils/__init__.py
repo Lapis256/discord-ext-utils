@@ -1,3 +1,5 @@
+from . import emoji # noqa
+
 from .expander import * # noqa
 from .bot import * # noqa
 
