@@ -5,12 +5,11 @@ from .unicode_emojis import emojis
 
 __all__ = ("encode", "decode", "count", "get", "emojis")
 
-_reverse = list(emojis.items())
-_reverse.reverse()
-_reversed_emojis = {v: k for k, v in _reverse}
 _text_to_emoji_regex = re.compile("(?P<all>:(?P<name>.+?):)")
-_emoji_to_text_regex = re.compile("(?P<emoji>(?:%s))" % (
-    "|".join(map(re.escape, _reversed_emojis.keys()))
+(_reversed := [*emojis.items()]).reverse()
+_swaped_emojis = {v: k for k, v in _reversed}
+_emoji_to_text_regex = re.compile("(?P<emoji>%s)" % (
+    "|".join(map(re.escape, _swaped_emojis.keys()))
 ))
 
 
@@ -27,7 +26,7 @@ def encode(text):
 def decode(text):
     def repl(match):
         emoji = match.group("emoji")
-        return ":%s:" % _reversed_emojis.get(emoji, None)
+        return ":%s:" % _swaped_emojis.get(emoji, None)
     return _emoji_to_text_regex.sub(repl, text)
 
 

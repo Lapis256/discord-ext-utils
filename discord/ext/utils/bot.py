@@ -4,19 +4,10 @@ from discord.ext.commands import (
 )
 
 from .once_event import OnceEvent
-# from .help_slash_command import HelpSlashCommand
 
 
 __all__ = ("Bot", "AutoShardedBot")
 
-
-"""
-class BotBase(OnceEvent, HelpSlashCommand):
-    def __init__(self, *args, **kwargs):
-        kwargs["register_help_slash_command"] = kwargs.get("register_help_slash_command", False)
-        
-        super().__init__(*args, **kwargs)
-"""
 
 class BotBase(OnceEvent):
     pass
