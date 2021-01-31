@@ -7,8 +7,8 @@ emoji.encode("Discord is :+1:")
 emoji.decode("Discord is 👍")
 # 'Discord is :thumbsup:'
 
-emoji.listup("😀😁😀😁")
-# ['😀', '😁', '😀', '😁']
+emoji.listup("😁😀😁😀")
+# ['😁', '😀', '😁', '😀']
 
 emoji.count("😁😀😁😀")
 # 4
