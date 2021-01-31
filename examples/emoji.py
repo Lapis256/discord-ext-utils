@@ -7,11 +7,19 @@ emoji.encode("Discord is :+1:")
 emoji.decode("Discord is 👍")
 # 'Discord is :thumbsup:'
 
-emoji.count("😀😁😀😁")
+emoji.listup("😀😁😀😁")
+# ['😀', '😁', '😀', '😁']
+
+emoji.count("😁😀😁😀")
 # 4
 
-emoji.count("😀😁😀😁", unique=True)
+emoji.count("😁😀😁😀", unique=True)
 # 2
 
-emoji.get("😀😁😀😁")
+emoji.get("😁😀😁😀")
 # ('😀', '😁')
+# Dose not keep order.
+
+emoji.get("😁😀😁😀", keep_order=True)
+# ('😁', '😀')
+# Keep the order.

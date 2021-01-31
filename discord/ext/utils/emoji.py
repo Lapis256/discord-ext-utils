@@ -1,9 +1,11 @@
 import re
 
+from more_itertools import unique_everseen
+
 from .unicode_emojis import emojis
 
 
-__all__ = ("encode", "decode", "count", "get", "emojis")
+__all__ = ("encode", "decode", "listup", "count", "get", "emojis")
 
 _text_to_emoji_regex = re.compile("(?P<all>:(?P<name>.+?):)")
 (_reversed := [*emojis.items()]).reverse()
@@ -30,10 +32,15 @@ def decode(text):
     return _emoji_to_text_regex.sub(repl, text)
 
 
+def listup(text):
+    return _emoji_to_text_regex.findall(text)
+
+
 def count(text, unique=False):
     func = set if unique else list
-    return len(func(_emoji_to_text_regex.findall(text)))
+    return len(func(listup(text)))
 
 
-def get(text):
-    return tuple({*_emoji_to_text_regex.findall(text)})
+def get(text, keep_order=False):
+    func = unique_everseen if keep_order else set
+    return tuple(func(listup(text)))
