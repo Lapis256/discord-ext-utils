@@ -2,7 +2,7 @@ from discord.ext import commands, utils
 
 
 # utils.OnceEvent etc. must be written before commands.Bot.
-class MyBot(utils.OnceEvent, commands.Bot):
+class OnceEventBot(utils.OnceEvent, commands.Bot):
     async def once_ready(self):
         pass
         # It will be executed only once.
