@@ -213,5 +213,5 @@ nature_emojis = {
     "umbrella": "\U00002614",
     "umbrella2": "\U00002602\U0000fe0f",
     "ocean": "\U0001f30a",
-    "fog": "\U0001f32b\U0000fe0f",
+    "fog": "\U0001f32b\U0000fe0f"
 }

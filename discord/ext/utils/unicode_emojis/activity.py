@@ -596,5 +596,5 @@ activity_emojis = {
     "bowling": "\U0001f3b3",
     "video_game": "\U0001f3ae",
     "slot_machine": "\U0001f3b0",
-    "jigsaw": "\U0001f9e9",
+    "jigsaw": "\U0001f9e9"
 }

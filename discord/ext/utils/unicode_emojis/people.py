@@ -2898,5 +2898,5 @@ people_emojis = {
     "eyeglasses": "\U0001f453",
     "dark_sunglasses": "\U0001f576\U0000fe0f",
     "goggles": "\U0001f97d",
-    "closed_umbrella": "\U0001f302",
+    "closed_umbrella": "\U0001f302"
 }

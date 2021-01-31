@@ -268,5 +268,5 @@ flags_emojis = {
     "flag_sj": "\U0001f1f8\U0001f1ef",
     "flag_ta": "\U0001f1f9\U0001f1e6",
     "flag_um": "\U0001f1fa\U0001f1f2",
-    "united_nations": "\U0001f1fa\U0001f1f3",
+    "united_nations": "\U0001f1fa\U0001f1f3"
 }

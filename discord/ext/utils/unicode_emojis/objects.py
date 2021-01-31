@@ -263,5 +263,5 @@ objects_emojis = {
     "lock_with_ink_pen": "\U0001f50f",
     "closed_lock_with_key": "\U0001f510",
     "lock": "\U0001f512",
-    "unlock": "\U0001f513",
+    "unlock": "\U0001f513"
 }

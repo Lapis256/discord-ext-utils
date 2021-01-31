@@ -142,5 +142,5 @@ travel_emojis = {
     "night_with_stars": "\U0001f303",
     "milky_way": "\U0001f30c",
     "bridge_at_night": "\U0001f309",
-    "foggy": "\U0001f301",
+    "foggy": "\U0001f301"
 }

@@ -135,5 +135,5 @@ food_emojis = {
     "bowl_with_spoon": "\U0001f963",
     "takeout_box": "\U0001f961",
     "chopsticks": "\U0001f962",
-    "salt": "\U0001f9c2",
+    "salt": "\U0001f9c2"
 }

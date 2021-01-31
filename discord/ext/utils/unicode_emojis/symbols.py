@@ -333,5 +333,5 @@ symbols_emojis = {
     "regional_indicator_d": "\U0001f1e9",
     "regional_indicator_c": "\U0001f1e8",
     "regional_indicator_b": "\U0001f1e7",
-    "regional_indicator_a": "\U0001f1e6",
+    "regional_indicator_a": "\U0001f1e6"
 }
