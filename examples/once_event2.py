@@ -12,7 +12,7 @@ class OnceEventBot(utils.OnceEvent, commands.Bot):
         # It will be executed many times.
 
 
-bot = MyBot(command_prefix=commands.when_mentioned)
+bot = OnceEventBot(command_prefix=commands.when_mentioned)
 
 
 bot.run("TOKEN")
