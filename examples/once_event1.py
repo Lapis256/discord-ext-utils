@@ -1,7 +1,12 @@
-from discord.ext import utils
+from discord.ext import commands, utils
 
 
-bot = utils.Bot(command_prefix=".")
+# utils.OnceEvent etc. must be written before commands.Bot.
+class OnceEventBot(utils.OnceEvent, commands.Bot):
+    pass
+
+
+bot = OnceEventBot(command_prefix=commands.when_mentioned)
 
 
 # Also available in Bot.listen and Cog.listener.

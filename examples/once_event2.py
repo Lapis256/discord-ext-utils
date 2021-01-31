@@ -1,7 +1,8 @@
-from discord.ext import utils
+from discord.ext import commands, utils
 
 
-class MyBot(utils.Bot):
+# utils.OnceEvent etc. must be written before commands.Bot.
+class MyBot(utils.OnceEvent, commands.Bot):
     async def once_ready(self):
         pass
         # It will be executed only once.
@@ -11,7 +12,7 @@ class MyBot(utils.Bot):
         # It will be executed many times.
 
 
-bot = MyBot(command_prefix=".")
+bot = MyBot(command_prefix=commands.when_mentioned)
 
 
 bot.run("TOKEN")
