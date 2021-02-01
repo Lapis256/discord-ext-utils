@@ -1,11 +1,15 @@
 from setuptools import setup
-from re import search
+import re
 
 with open("requirements.txt") as f:
     requirements = f.readlines()
 
+version = ""
 with open("discord/ext/utils/__init__.py") as f:
-    version = search(r'__version__\s=\s"(.*?)"', f.read()).group(1)
+    version = re.search(r'^__version__\s*=\s*"(.*?)"', f.read(), re.MULTILINE).group(1)
+
+if not version:
+    raise RuntimeError('version is not set')
 
 packages = [
     "discord.ext.utils",
@@ -22,5 +26,5 @@ setup(
     license="MIT",
     description="An extension module of discord.ext.commands.",
     install_requires=requirements,
-    python_requires=">=3.6.0"
+    python_requires=">=3.8.0"
 )
