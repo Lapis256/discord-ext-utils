@@ -35,7 +35,7 @@ class _KeyOnlyFormatter(Formatter):
                 result.append(literal_text)
 
             if field_name is not None:
-                obj = self.get_field(field_name, (), kwargs)[0]
+                obj, _ = self.get_field(field_name, (), kwargs)
                 obj = self.convert_field(obj, conversion)
                 format_spec = self.format(format_spec, kwargs, recursion_depth-1)
                 result.append(self.format_field(obj, format_spec))
