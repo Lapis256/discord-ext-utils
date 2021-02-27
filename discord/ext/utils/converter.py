@@ -35,28 +35,18 @@ class _KeyOnlyFormatter(Formatter):
                 result.append(literal_text)
 
             if field_name is not None:
-                obj, _ = self.get_field(field_name, (), kwargs)
+                obj, _ = self.get_field(field_name, kwargs)
                 obj = self.convert_field(obj, conversion)
                 format_spec = self.format(format_spec, kwargs, recursion_depth-1)
                 result.append(self.format_field(obj, format_spec))
 
         return "".join(result)
 
-    def get_value(self, key, args, kwargs):
-        return kwargs.get(key, "{%s}" % key)
-
-    def parse(self, format_string):
-        iterator = super().parse(format_string)
-        while True:
-            try:
-                yield next(iterator)
-            except ValueError as e:
-                if str(e) == "Single '{' encountered in format string":
-                    yield ("{", None, "", "")
-                elif str(e) == "Single '}' encountered in format string":
-                    yield ("}", None, "", "")
-            except StopIteration:
-                break
+    def get_field(self, field_name, kwargs):
+        try:
+            return super().get_field(field_name, (), kwargs)
+        except (KeyError, AttributeError, ValueError) as e:
+            return "{%s}" % field_name, field_name
 
 
 class formatC(Converter):
