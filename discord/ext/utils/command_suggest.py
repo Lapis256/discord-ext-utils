@@ -80,6 +80,15 @@ class AutoSuggestion:
         self.max_distance = max_distance
         self.suggestion_num = suggestion_num
 
+        self.after_invoke(self.__after_invoke)
+
+    async def __after_invoke(self, ctx):
+        from discord.ext.commands import CommandNotFound
+        if ctx.subcommand_passed is not None and\
+           ctx.invoked_subcommand is None:
+            exc = CommandNotFound('Command "{}" is not found'.format(ctx.subcommand_passed))
+            self.dispatch('command_error', ctx, exc)
+
     async def on_command_error(self, ctx, error):
         print(error)
         if isinstance(error, CommandNotFound):

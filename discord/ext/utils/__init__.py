@@ -10,4 +10,4 @@ from .utils import * # noqa
 from .once_event import OnceEvent # noqa
 from .presence import PresenceTask # noqa
 
-__version__ = "0.4.6"
+__version__ = "0.4.7"
