@@ -31,7 +31,7 @@ async def find_command(words, group, max_distance, check, nest=0):
 
         dist = distance(name, word)
         is_valid = await check(command)
-        if dist > max_distance and (not is_valid):
+        if dist > max_distance or (not is_valid):
             continue
 
         sub = {}
