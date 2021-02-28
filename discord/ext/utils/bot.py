@@ -4,12 +4,13 @@ from discord.ext.commands import (
 )
 
 from .once_event import OnceEvent
+from .command_suggest import AutoSuggestion
 
 
 __all__ = ("Bot", "AutoShardedBot")
 
 
-class BotBase(OnceEvent):
+class BotBase(OnceEvent, AutoSuggestion):
     pass
 
 
