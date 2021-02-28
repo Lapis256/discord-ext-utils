@@ -1,9 +1,9 @@
-import itertools
-
 from discord.ext.commands.view import StringView
+from discord.ext.commands.core import hooked_wrapped_callback
 from Levenshtein import distance
 from discord.ext.commands import (
     Group,
+    Command,
     CommandError,
     CommandNotFound
 )
@@ -12,55 +12,66 @@ from discord.ext.commands import (
 __all__ = ("suggest", "AutoSuggestion")
 
 
-def split_content(content, prefix):
+def split_content(prefix, content):
+    contents = []
     view = StringView(content)
     view.skip_string(prefix)
-    words = []
-    while True:
-        words.append(view.get_word())
-        if view.eof:
-            break
+
+    while not view.eof:
+        word = view.get_word()
+        contents.append(word)
         view.skip_ws()
-    return words
+    return contents
 
 
-async def find_command(words, group, max_distance, check, nest=0):
-    suggest_commands = {}
-    for word, command_data in itertools.product(words[nest:], group.all_commands.items()):
-        name, command = command_data
+def format_content(prefix, content):
+    return " ".join(split_content(prefix, content))
 
-        dist = distance(name, word)
-        is_valid = await check(command)
-        if dist > max_distance or (not is_valid):
+
+def find_nearest_commands(commands, content, max_distance):
+    _commands = []
+    for command in commands:
+        dist = distance(content, command)
+        if dist > max_distance:
+            continue
+        _commands.append((dist, command))
+    return [*map(lambda x: x[1],
+                sorted(_commands, key=lambda x: x[0])
+           )]
+
+
+async def get_filtered_commands(group, check, parent=None):
+    commands = []
+    if parent is None:
+        parent = []
+    for name, command in group.all_commands.items():
+        if not await check(command):
             continue
 
-        sub = {}
-        if nest < len(words)-1:
-            if not isinstance(command, Group):
-                continue
-            sub = await find_command(words, command, max_distance, check, nest+1)
-            if not sub:
-                continue
+        parent_str = " ".join(parent) + (" " if len(parent) else "")
 
-        suggest_commands[name] = {"dist": dist, "sub": sub}
+        if isinstance(command, Group):
+            commands.append(parent_str + name)
+            parent.append(name)
+            subcommands = await get_filtered_commands(command, check, parent)
+            parent.pop()
+            commands += subcommands
 
-    return sorted(suggest_commands.items(), key=lambda x: x[1]["dist"])
-
-
-def format_suggest_commands(commands):
-    formated_commands = []
-    for name, command in commands:
-        if command["sub"]:
-            sub = format_suggest_commands(command["sub"])
-            for sub_name in sub:
-                formated_commands.append("%s %s" % (name, sub_name))
-        else:
-            formated_commands.append(name)
-
-    return formated_commands
+        elif isinstance(command, Command):
+            commands.append(parent_str + name)
+    return commands
 
 
-async def suggest(ctx, content, max_distance=3, num=3):
+def get_full_name(prefix, content, last):
+    contents = split_content(prefix, content)
+    for i, content in enumerate(contents):
+        if content != last:
+            continue
+    else:
+        return " ".join(contents[:i+1])
+
+
+async def suggest(ctx, content, max_distance=3, max_suggestion=3):
     async def check(command):
         if command.hidden:
             return False
@@ -69,35 +80,35 @@ async def suggest(ctx, content, max_distance=3, num=3):
         except CommandError:
             return False
 
-    texts = split_content(content, ctx.prefix)
-    commands = await find_command(texts, ctx.bot, max_distance, check)
-    return format_suggest_commands(commands)[:num]
+    formated_content = format_content(ctx.prefix, ctx.message.content)
+    commands = await get_filtered_commands(ctx.bot, check)
+    return find_nearest_commands(commands, formated_content, max_distance)[:max_suggestion]
 
 
 class AutoSuggestion:
-    def __init__(self, *args, max_distance=3, suggestion_num=3, **kwargs):
+    def __init__(self, *args, max_distance=3, max_suggestion=3, **kwargs):
         super().__init__(*args, **kwargs)
         self.max_distance = max_distance
-        self.suggestion_num = suggestion_num
-
-        self.after_invoke(self.__after_invoke)
-
-    async def __after_invoke(self, ctx):
-        from discord.ext.commands import CommandNotFound
-        if ctx.subcommand_passed is not None and\
-           ctx.invoked_subcommand is None:
-            exc = CommandNotFound('Command "{}" is not found'.format(ctx.subcommand_passed))
-            self.dispatch('command_error', ctx, exc)
+        self.max_suggestion = max_suggestion
 
     async def on_command_error(self, ctx, error):
-        print(error)
         if isinstance(error, CommandNotFound):
-            commands = map(lambda c: "`%s%s`" % (ctx.prefix, c), await suggest(
-                ctx,
-                ctx.message.content,
-                self.max_distance,
-                self.suggestion_num
-            ))
-            await ctx.send("%s\nDid you mean? :\n%s" % (error, "\n".join(commands)))
+            content = ctx.message.content
+            raw_commands = await suggest(ctx, content, self.max_distance, self.max_suggestion)
+            if not raw_commands:
+                return
+
+            commands = map(lambda c: "`%s`" % c, raw_commands)
+            replaced_error = str(error).replace('"', "`")
+            await ctx.send(
+                "%s\nDid you mean? :\n%s" % (replaced_error, "\n".join(commands))
+            )
         else:
             await super().on_command_error(ctx, error)
+
+    async def invoke(self, ctx):
+        await super().invoke(ctx)
+        if (ctx.command is None or ctx.invoked_with) and ctx.subcommand_passed is not None:
+            full = get_full_name(ctx.prefix, ctx.message.content, ctx.subcommand_passed)
+            exc = CommandNotFound('Command "{}" is not found'.format(full))
+            self.dispatch('command_error', ctx, exc)
