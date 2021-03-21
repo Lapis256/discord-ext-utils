@@ -11,15 +11,15 @@ def get_extensions(directory, recursive=True):
     
     for file in path.rglob("*"):
         _parent = file.parent
-        if file.name != "__init__.py":
-            if file.name.startswith("_"):
-                if file.is_dir():
-                    exclude_parent = file
+
+        if file.name != "__init__.py" and file.name.startswith("_"): 
+            if file.is_dir():
+                exclude_parent = file
+            continue
+
+        if exclude_parent and _parent.is_relative_to(exclude_parent):
                 continue
 
-            if exclude_parent and _parent.is_relative_to(exclude_parent):
-                    continue
-        
         if file.name == "__init__.py":
             exclude_parent = _parent
             exts.append(_parent)
