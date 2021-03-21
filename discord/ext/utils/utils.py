@@ -4,27 +4,34 @@ from pathlib import Path
 __all__ = ("get_extensions", )
 
 
+def _is_exclude(exclude_parents, path):
+    for parent in exclude_parents:
+        if path.is_relative_to(parent):
+            return True
+    return False
+
+
 def get_extensions(directory, recursive=True):
     path = Path(directory)
-    exclude_parent = None
-    exts = []
-    
-    for file in path.rglob("*"):
+    exclude_parents = []
+    extensions = []
+
+    for file in (path.rglob if recursive else path.glob)("*"):
         _parent = file.parent
 
-        if file.name != "__init__.py" and file.name.startswith("_"): 
+        if file.name.startswith("_"):
             if file.is_dir():
-                exclude_parent = file
+                exclude_parents.append(file)
             continue
 
-        if exclude_parent and _parent.is_relative_to(exclude_parent):
-                continue
+        if _is_exclude(exclude_parents, _parent):
+            continue
 
-        if file.name == "__init__.py":
-            exclude_parent = _parent
-            exts.append(_parent)
+        if file.is_dir() and list(file.glob("__init__.py")):
+            exclude_parents.append(file)
+            extensions.append(file)
 
         elif file.is_file() and file.suffix == ".py":
-            exts.append(file)
+            extensions.append(file)
 
-    return [str(ext.with_suffix("")).replace("/", ".") for ext in exts]
+    return [str(ext.with_suffix("")).replace("/", ".") for ext in extensions]
